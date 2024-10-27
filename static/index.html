@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Sheet Translator</title>
+</head>
+<body>
+    <h1>Google Sheet Translator</h1>
+    
+    <!-- Ô nhập liệu lớn cho credentials JSON -->
+    <div id="credentialsContainer">
+        <label for="credentials">Enter Credentials JSON:</label><br>
+        <textarea id="credentials" rows="10" cols="50" placeholder="Paste your credentials JSON here"></textarea><br>
+        <button onclick="submitCredentials()">Submit Credentials</button>
+    </div>
+
+    <!-- Nút Start Translation -->
+    <button onclick="startTranslation()">Start Translation</button>
+    <p id="status"></p>
+
+    <script>
+        // Hàm để gửi credentials JSON và ẩn ô nhập liệu sau khi gửi
+        function submitCredentials() {
+            const credentialsInput = document.getElementById("credentials").value;
+
+            fetch('/validate-credentials', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ credentials: JSON.parse(credentialsInput) })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById("status").innerHTML = data.message;
+                    document.getElementById("credentialsContainer").style.display = "none"; // Ẩn ô nhập liệu
+                } else {
+                    document.getElementById("status").innerHTML = "Failed: " + data.message;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById("status").innerHTML = "An error occurred.";
+            });
+        }
+
+        // Hàm để bắt đầu dịch
+        function startTranslation() {
+            document.getElementById("status").innerHTML = "Starting translation...";
+            fetch('/start-translation', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("status").innerHTML = data.message;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById("status").innerHTML = "An error occurred.";
+            });
+        }
+    </script>
+</body>
+</html>
