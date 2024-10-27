@@ -17,6 +17,7 @@ app = Flask(__name__)
 sheet_id = os.getenv("GOOGLE_SHEET_ID")
 sheet_name = os.getenv("GOOGLE_SHEET_NAME")
 
+
 # Biến để kiểm soát trạng thái dịch
 is_running = False
 credentials = None  # Biến lưu credentials
@@ -82,9 +83,11 @@ def readiness():
 # Endpoint để kiểm tra và lưu credentials JSON
 @app.route('/validate-credentials', methods=['POST'])
 def validate_credentials():
+    print(sheet_id)	
     global credentials
     data = request.get_json()
     credentials = data.get("credentials")
+    print(sheet_id)	
 
     # Lưu credentials vào file JSON và kiểm tra tính hợp lệ
     save_credentials_to_file(credentials)
